@@ -5,7 +5,7 @@ from PIL import Image, ImageOps
 
 # 1️⃣ Modell laden
 # Stelle sicher, dass keras_model.h5 im gleichen Ordner wie ai_model.py liegt
-model = load_model("keras_model.h5", compile=False)
+model = load_model("keras_model(1).h5", compile=False)
 
 # 2️⃣ Labels einlesen
 with open("labels.txt", "r") as f:
