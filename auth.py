@@ -1,28 +1,39 @@
+import sqlite3
 import bcrypt
-from database import get_connection
 
-def hash_password(password):
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+DB = "fundbuero.db"
+
+def create_table():
+    conn = sqlite3.connect(DB)
+    c = conn.cursor()
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            username TEXT PRIMARY KEY,
+            password TEXT
+        )
+    """)
+    conn.commit()
+    conn.close()
 
 def register_user(username, password):
-    conn = get_connection()
+    conn = sqlite3.connect(DB)
     c = conn.cursor()
-    hashed = hash_password(password)
+    hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
     try:
-        c.execute("INSERT INTO users VALUES (?,?)", (username, hashed))
-        conn.commit()
-        conn.close()
-        return True
-    except:
+        c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed))
+    except sqlite3.IntegrityError:
         conn.close()
         return False
+    conn.commit()
+    conn.close()
+    return True
 
 def login_user(username, password):
-    conn = get_connection()
+    conn = sqlite3.connect(DB)
     c = conn.cursor()
     c.execute("SELECT password FROM users WHERE username=?", (username,))
-    result = c.fetchone()
+    row = c.fetchone()
     conn.close()
-    if result and bcrypt.checkpw(password.encode(), result[0]):
+    if row and bcrypt.checkpw(password.encode(), row[0]):
         return True
     return False
