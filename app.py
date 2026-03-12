@@ -1,78 +1,66 @@
 import streamlit as st
-from database import init_db, save_item, get_items
-from auth import register_user, login_user
 from ai_model import predict
+from auth import create_table, register_user, login_user
+from database import create_items_table, add_item, search_items
 from PIL import Image
-import io
+import datetime
 
-init_db()
-st.set_page_config(page_title="Fundbüro KI System")
+# Tabellen erstellen
+create_table()
+create_items_table()
 
-st.title("Fundbüro KI System")
+st.set_page_config(page_title="Fundbüro KI System", layout="wide")
+st.title("🏛 Fundbüro KI System (Smartphone-ready)")
 
-if "user" not in st.session_state:
-    st.session_state.user = None
+# --- Login ---
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
 
-# LOGIN / REGISTER
-if st.session_state.user is None:
-    tab1, tab2 = st.tabs(["Login", "Register"])
-
-    with tab1:
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
+if not st.session_state.logged_in:
+    st.subheader("Login / Registrierung")
+    username = st.text_input("Username")
+    password = st.text_input("Passwort", type="password")
+    col1, col2 = st.columns(2)
+    with col1:
         if st.button("Login"):
             if login_user(username, password):
-                st.session_state.user = username
+                st.session_state.logged_in = True
                 st.success("Login erfolgreich!")
-                st.experimental_rerun()
             else:
-                st.error("Falscher Username oder Passwort")
-
-    with tab2:
-        new_user = st.text_input("Neuer Username")
-        new_pass = st.text_input("Neues Passwort", type="password")
+                st.error("Login fehlgeschlagen")
+    with col2:
         if st.button("Registrieren"):
-            if register_user(new_user, new_pass):
-                st.success("Account erstellt!")
+            if register_user(username, password):
+                st.success("Registrierung erfolgreich!")
             else:
                 st.error("Username existiert bereits")
-    st.stop()
+else:
+    st.subheader("🔐 Fundbüro")
 
-# Tabs: Upload / Kamera / Datenbank
-tab1, tab2, tab3 = st.tabs(["Upload", "Kamera", "Datenbank"])
+    # --- Bild Upload + Kamera ---
+    st.info("📤 Lade ein Bild hoch oder benutze die Kamera")
+    uploaded_file = st.file_uploader("Bild hochladen", type=["jpg","jpeg","png"])
+    camera_file = st.camera_input("📷 Kamera aufnehmen")
 
-with tab1:
-    uploaded = st.file_uploader("Bild hochladen", type=["jpg","jpeg","png","bmp","webp"])
-    if uploaded:
-        image = Image.open(uploaded).convert("RGB")
-        label = predict(image)
-        st.image(image, width=300)
-        st.success(label)
-        buffer = io.BytesIO()
-        image.save(buffer, format="PNG")
-        save_item(st.session_state.user, buffer.getvalue(), label)
+    image = None
+    if uploaded_file:
+        image = Image.open(uploaded_file)
+    elif camera_file:
+        image = Image.open(camera_file)
 
-with tab2:
-    cam = st.camera_input("Foto aufnehmen")
-    if cam:
-        image = Image.open(cam).convert("RGB")
-        label = predict(image)
-        st.image(image, width=300)
-        st.success(label)
-        buffer = io.BytesIO()
-        image.save(buffer, format="PNG")
-        save_item(st.session_state.user, buffer.getvalue(), label)
+    if image:
+        st.image(image, caption="Bild ausgewählt")
+        predicted_class, confidence = predict(image)
+        st.success(f"Vorhersage: {predicted_class} ({confidence*100:.2f}%)")
+        
+        # Datum
+        date = st.date_input("Funddatum", datetime.date.today())
+        add_item(predicted_class, uploaded_file.name if uploaded_file else "camera_photo", str(date))
 
-with tab3:
-    search = st.text_input("Suche Gegenstand")
-    date = st.text_input("Datum YYYY-MM-DD")
-    rows = get_items()
-    for r in rows:
-        user, img, label, d = r
-        if search and search.lower() not in label.lower():
-            continue
-        if date and date != str(d):
-            continue
-        st.image(img, width=200)
-        st.write(label)
-        st.write(d)
+    # --- Suche in der Datenbank ---
+    st.subheader("🔍 Suche in der Funddatenbank")
+    query = st.text_input("Suche nach Gegenständen")
+    if query:
+        results = search_items(query)
+        for r in results:
+            st.write(f"{r[0]} | {r[1]} | {r[3]}")
