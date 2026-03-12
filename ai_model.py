@@ -2,7 +2,7 @@ import numpy as np
 from PIL import ImageOps
 from tensorflow.keras.models import load_model
 
-model = load_model("models/keras_model")  # SavedModel Ordner
+model = load_model("keras_model.h5", compile=False)
 labels = ["Schuh", "Hose", "Shirt"]  # Einfaches Beispiel, oder labels.txt laden
 
 def predict(image):
