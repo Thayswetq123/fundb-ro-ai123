@@ -1,3 +1,7 @@
+from components.macros import calculate_macros
+from components.water import calculate_water
+from components.sleep import sleep_recommendation
+from components.image_compare import show_image_comparison
 import streamlit as st
 from services.ai_service import analyze_fitness
 from components.nutrition import calculate_calories
