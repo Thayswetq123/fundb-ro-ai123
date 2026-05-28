@@ -27,10 +27,37 @@ def save_users(users):
         json.dump(users, f)
 
 
+# SESSION STATE
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+if "username" not in st.session_state:
+    st.session_state.username = ""
+
+
 # LOGIN SYSTEM
 def login_section():
 
     st.sidebar.title("🔐 Account")
+
+    users = load_users()
+
+    # WENN EINGELOGGT
+    if st.session_state.logged_in:
+
+        st.sidebar.success(
+            f"Eingeloggt als {st.session_state.username}"
+        )
+
+        if st.sidebar.button("Logout"):
+
+            st.session_state.logged_in = False
+            st.session_state.username = ""
+
+            st.rerun()
+
+        return True
+
 
     option = st.sidebar.selectbox(
         "Option",
@@ -39,8 +66,6 @@ def login_section():
             "Registrieren"
         ]
     )
-
-    users = load_users()
 
     username = st.sidebar.text_input("Username")
 
@@ -59,18 +84,19 @@ def login_section():
 
                 if users[username] == password:
 
-                    st.sidebar.success(
-                        f"Willkommen {username}"
-                    )
+                    st.session_state.logged_in = True
+                    st.session_state.username = username
 
-                    return True
+                    st.rerun()
 
                 else:
+
                     st.sidebar.error(
                         "Falsches Passwort"
                     )
 
             else:
+
                 st.sidebar.error(
                     "User existiert nicht"
                 )
