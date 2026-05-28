@@ -12,7 +12,7 @@ from components.sleep import sleep_recommendation
 from components.image_compare import show_image_comparison
 
 from components.auth import login_section
-from components.save_progress import save_progress
+from components.progress_storage import save_progress_entry
 from components.vision import vision_analysis
 from components.macro_tracker import macro_tracker
 from components.videos import show_workout_video
