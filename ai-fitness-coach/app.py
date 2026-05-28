@@ -19,15 +19,17 @@ from components.videos import show_workout_video
 from components.chatbot import chatbot_coach
 
 
+# PAGE CONFIG
 st.set_page_config(
     page_title="AI Fitness Coach",
     layout="wide"
 )
 
-# LOGIN
-logged_in = login_section()
 
-if not logged_in:
+# LOGIN
+login_section()
+
+if not st.session_state.logged_in:
     st.warning("Bitte einloggen")
     st.stop()
 
@@ -35,7 +37,13 @@ if not logged_in:
 # TITLE
 st.title("💪 AI Fitness Coach")
 
-st.markdown("## Deine persönliche Fitness Analyse")
+st.markdown(
+    f"## Willkommen {st.session_state.username}"
+)
+
+st.markdown(
+    "### Deine persönliche Fitness Analyse"
+)
 
 
 # LAYOUT
@@ -85,7 +93,11 @@ with col2:
     )
 
     if image:
-        st.image(image)
+        st.image(
+            image,
+            caption="Hochgeladenes Bild",
+            use_container_width=True
+        )
 
     before_image = st.file_uploader(
         "Vorher Bild",
@@ -98,10 +110,10 @@ with col2:
     )
 
 
-# BUTTON
+# ANALYSE BUTTON
 if st.button("🚀 Analyse starten"):
 
-    # AI ANALYSIS
+    # AI ANALYSE
     result = analyze_fitness(
         age,
         weight,
@@ -114,7 +126,7 @@ if st.button("🚀 Analyse starten"):
     st.write(result)
 
 
-    # VISION ANALYSIS
+    # VISION ANALYSE
     vision = vision_analysis()
 
     st.markdown("# 📸 Vision Analyse")
@@ -122,7 +134,7 @@ if st.button("🚀 Analyse starten"):
     st.write(vision)
 
 
-    # CALORIES
+    # ERNÄHRUNG
     st.markdown("# 🍽 Ernährung")
 
     calories = calculate_calories(
@@ -137,14 +149,14 @@ if st.button("🚀 Analyse starten"):
     )
 
 
-    # SAVE PROGRESS
+    # FORTSCHRITT SPEICHERN
     save_progress(
         weight,
         calories
     )
 
 
-    # MACROS
+    # MAKROS
     st.markdown("# 🍗 Makros")
 
     macros = calculate_macros(
@@ -155,21 +167,21 @@ if st.button("🚀 Analyse starten"):
     st.write(macros)
 
 
-    # MACRO TRACKER
+    # MAKRO TRACKER
     macro_tracker()
 
 
-    # WATER
+    # WASSER
     water = calculate_water(weight)
 
     st.markdown("# 💧 Wasser")
 
     st.success(
-        f"Empfohlene Wassermenge: {water}L"
+        f"Empfohlene Wassermenge: {water} Liter"
     )
 
 
-    # SLEEP
+    # SCHLAF
     sleep = sleep_recommendation(goal)
 
     st.markdown("# 💤 Schlaf")
@@ -178,23 +190,23 @@ if st.button("🚀 Analyse starten"):
 
 
     # WORKOUT
-    st.markdown("# 💪 Workout")
+    st.markdown("# 💪 Workout Plan")
 
     workout = generate_workout(goal)
 
     st.write(workout)
 
 
-    # PROGRESS CHART
+    # CHART
     st.markdown("# 📈 Fortschritt")
 
     show_progress_chart(weight)
 
 
-    # IMAGE COMPARISON
+    # BILDER VERGLEICH
     if before_image and after_image:
 
-        st.markdown("# 📸 Fortschrittsvergleich")
+        st.markdown("# 📸 Vorher / Nachher")
 
         show_image_comparison(
             before_image,
