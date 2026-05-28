@@ -1,28 +1,57 @@
 import random
 
 
-def vision_analysis():
+def vision_analysis(goal, weight, height):
 
-    bodyfat = random.randint(10, 25)
+    bmi = weight / ((height / 100) ** 2)
 
-    muscles = [
-        "Brust",
-        "Schultern",
-        "Rücken",
-        "Arme"
-    ]
+    # stabile Bewertung statt komplett random
+    bodyfat_estimation = round(
+        28 - (bmi * 0.8),
+        1
+    )
 
-    weak_point = random.choice(muscles)
+    if bodyfat_estimation < 8:
+        bodyfat_estimation = 8
+    if bodyfat_estimation > 35:
+        bodyfat_estimation = 35
+
+    muscle_balance = {
+        "Brust": random.randint(1, 10),
+        "Rücken": random.randint(1, 10),
+        "Beine": random.randint(1, 10),
+        "Schultern": random.randint(1, 10),
+        "Core": random.randint(1, 10)
+    }
+
+    weakest = min(muscle_balance, key=muscle_balance.get)
+    strongest = max(muscle_balance, key=muscle_balance.get)
+
+    if goal == "Muskelaufbau":
+        focus = "Kalorienüberschuss + schwere Grundübungen"
+    elif goal == "Fett verlieren":
+        focus = "Kaloriendefizit + mehr Cardio"
+    else:
+        focus = "Balance aus Kraft & Cardio"
 
     return f"""
-📸 KI Vision Analyse
+📸 AI Körperanalyse
 
-Geschätzter Körperfettanteil:
-{bodyfat}%
+📊 BMI:
+{bmi:.1f}
 
-Verbesserungspotenzial:
-{weak_point}
+🔥 Geschätzter KFA:
+{bodyfat_estimation}%
 
-Empfehlung:
-Mehr Fokus auf progressive Belastung.
+💪 Stärkste Muskelgruppe:
+{strongest}
+
+⚠️ Schwächste Muskelgruppe:
+{weakest}
+
+🎯 Empfehlung:
+{focus}
+
+💡 Coaching:
+Trainiere {weakest} öfter (2–3x pro Woche Fokus).
 """
