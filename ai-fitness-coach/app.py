@@ -177,10 +177,11 @@ if st.button("🚀 Analyse starten"):
     st.session_state.workout = generate_workout(goal)
 
     # SAVE PROGRESS
-    save_progress(
-        weight,
-        st.session_state.calories
-    )
+    save_progress_entry(
+    st.session_state.username,
+    weight,
+    st.session_state.calories
+)
 
 
 # DAUERHAFTE AUSGABE
