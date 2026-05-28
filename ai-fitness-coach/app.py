@@ -93,6 +93,7 @@ with col2:
     )
 
     if image:
+
         st.image(
             image,
             caption="Hochgeladenes Bild",
@@ -110,61 +111,111 @@ with col2:
     )
 
 
-# ANALYSE BUTTON
+# SESSION STATES
+if "analysis_done" not in st.session_state:
+    st.session_state.analysis_done = False
+
+if "analysis_result" not in st.session_state:
+    st.session_state.analysis_result = ""
+
+if "vision_result" not in st.session_state:
+    st.session_state.vision_result = ""
+
+if "calories" not in st.session_state:
+    st.session_state.calories = 0
+
+if "macros" not in st.session_state:
+    st.session_state.macros = {}
+
+if "water" not in st.session_state:
+    st.session_state.water = 0
+
+if "sleep" not in st.session_state:
+    st.session_state.sleep = ""
+
+if "workout" not in st.session_state:
+    st.session_state.workout = ""
+
+
+# BUTTON
 if st.button("🚀 Analyse starten"):
 
+    st.session_state.analysis_done = True
+
     # AI ANALYSE
-    result = analyze_fitness(
+    st.session_state.analysis_result = analyze_fitness(
         age,
         weight,
         height,
         goal
     )
 
+    # VISION ANALYSE
+    st.session_state.vision_result = vision_analysis()
+
+    # KALORIEN
+    st.session_state.calories = calculate_calories(
+        weight,
+        height,
+        age,
+        goal
+    )
+
+    # MAKROS
+    st.session_state.macros = calculate_macros(
+        st.session_state.calories,
+        goal
+    )
+
+    # WASSER
+    st.session_state.water = calculate_water(weight)
+
+    # SCHLAF
+    st.session_state.sleep = sleep_recommendation(goal)
+
+    # WORKOUT
+    st.session_state.workout = generate_workout(goal)
+
+    # SAVE PROGRESS
+    save_progress(
+        weight,
+        st.session_state.calories
+    )
+
+
+# DAUERHAFTE AUSGABE
+if st.session_state.analysis_done:
+
+    # ANALYSE
     st.markdown("# 🧠 Analyse")
 
-    st.write(result)
+    st.write(
+        st.session_state.analysis_result
+    )
 
 
-    # VISION ANALYSE
-    vision = vision_analysis()
-
+    # VISION
     st.markdown("# 📸 Vision Analyse")
 
-    st.write(vision)
+    st.write(
+        st.session_state.vision_result
+    )
 
 
     # ERNÄHRUNG
     st.markdown("# 🍽 Ernährung")
 
-    calories = calculate_calories(
-        weight,
-        height,
-        age,
-        goal
-    )
-
     st.success(
-        f"Empfohlene Kalorien: {calories} kcal"
-    )
-
-
-    # FORTSCHRITT SPEICHERN
-    save_progress(
-        weight,
-        calories
+        f"Empfohlene Kalorien: {st.session_state.calories} kcal"
     )
 
 
     # MAKROS
     st.markdown("# 🍗 Makros")
 
-    macros = calculate_macros(
-        calories,
-        goal
+    st.write(
+        st.session_state.macros
     )
-
-    st.write(macros)
 
 
     # MAKRO TRACKER
@@ -172,29 +223,27 @@ if st.button("🚀 Analyse starten"):
 
 
     # WASSER
-    water = calculate_water(weight)
-
     st.markdown("# 💧 Wasser")
 
     st.success(
-        f"Empfohlene Wassermenge: {water} Liter"
+        f"Empfohlene Wassermenge: {st.session_state.water} Liter"
     )
 
 
     # SCHLAF
-    sleep = sleep_recommendation(goal)
-
     st.markdown("# 💤 Schlaf")
 
-    st.info(sleep)
+    st.info(
+        st.session_state.sleep
+    )
 
 
     # WORKOUT
     st.markdown("# 💪 Workout Plan")
 
-    workout = generate_workout(goal)
-
-    st.write(workout)
+    st.write(
+        st.session_state.workout
+    )
 
 
     # CHART
@@ -203,7 +252,7 @@ if st.button("🚀 Analyse starten"):
     show_progress_chart(weight)
 
 
-    # BILDER VERGLEICH
+    # BILD VERGLEICH
     if before_image and after_image:
 
         st.markdown("# 📸 Vorher / Nachher")
