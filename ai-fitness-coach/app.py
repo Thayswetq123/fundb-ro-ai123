@@ -1,296 +1,124 @@
 import streamlit as st
 
 from services.ai_service import analyze_fitness
+
 from components.progress_dashboard import show_progress_dashboard
-from components.nutrition import calculate_calories
-from components.workout import generate_workout
-from components.progress import show_progress_chart
 from components.ai_progress_coach import ai_progress_coach
-from components.macros import calculate_macros
-from components.water import calculate_water
-from components.sleep import sleep_recommendation
-from components.image_compare import show_image_comparison
 from components.adaptive_coach import adaptive_training_plan
-from components.auth import login_section
-from components.progress_storage import save_progress_entry
 from components.vision import vision_analysis
-from components.macro_tracker import macro_tracker
-from components.videos import show_workout_video
 from components.chatbot import chatbot_coach
+from components.macro_tracker import macro_tracker
 
 
-# PAGE CONFIG
 st.set_page_config(
     page_title="AI Fitness Coach",
     layout="wide"
 )
 
 
-# LOGIN
+# =========================
+# 🔐 LOGIN
+# =========================
+from components.auth import login_section
+
 login_section()
 
 if not st.session_state.logged_in:
-    st.warning("Bitte einloggen")
     st.stop()
 
 
-# TITLE
-st.title("💪 AI Fitness Coach")
+# =========================
+# 🧭 SIDEBAR NAVIGATION
+# =========================
 
-st.markdown(
-    f"## Willkommen {st.session_state.username}"
+st.sidebar.title("💪 Navigation")
+
+page = st.sidebar.radio(
+    "Menü",
+    [
+        "📊 Dashboard",
+        "🧠 AI Coach",
+        "📸 Vision",
+        "🤖 Chatbot"
+    ]
 )
 
-st.markdown(
-    "### Deine persönliche Fitness Analyse"
-)
+
+st.sidebar.markdown("---")
+st.sidebar.write(f"👤 {st.session_state.username}")
 
 
-# LAYOUT
-col1, col2 = st.columns(2)
+# =========================
+# 📊 DASHBOARD
+# =========================
 
+if page == "📊 Dashboard":
 
-# LEFT SIDE
-with col1:
+    st.title("📊 Dein Dashboard")
 
-    age = st.number_input(
-        "Alter",
-        16,
-        100,
-        25
+    show_progress_dashboard(st.session_state.username)
+
+    st.markdown("---")
+
+    adaptive_training_plan(
+        st.session_state.username,
+        "Muskelaufbau"
     )
 
-    weight = st.number_input(
-        "Gewicht (kg)",
-        40,
-        200,
-        80
-    )
 
-    height = st.number_input(
-        "Größe (cm)",
-        140,
-        220,
-        180
-    )
+# =========================
+# 🧠 AI COACH
+# =========================
+
+elif page == "🧠 AI Coach":
+
+    st.title("🧠 AI Personal Coach")
+
+    age = st.number_input("Alter", 16, 100, 25)
+    weight = st.number_input("Gewicht", 40, 200, 80)
+    height = st.number_input("Größe", 140, 220, 180)
 
     goal = st.selectbox(
         "Ziel",
-        [
-            "Muskelaufbau",
-            "Fett verlieren",
-            "Body Recomp"
-        ]
+        ["Muskelaufbau", "Fett verlieren", "Body Recomp"]
     )
 
+    if st.button("🚀 Analyse starten"):
 
-# RIGHT SIDE
-with col2:
+        result = analyze_fitness(age, weight, height, goal)
 
-    image = st.file_uploader(
-        "📸 Körperbild hochladen",
-        type=["png", "jpg", "jpeg"]
-    )
+        st.markdown("## 🧠 Ergebnis")
+        st.write(result)
+
+
+# =========================
+# 📸 VISION
+# =========================
+
+elif page == "📸 Vision":
+
+    st.title("📸 Körperanalyse")
+
+    image = st.file_uploader("Bild hochladen", type=["png", "jpg", "jpeg"])
 
     if image:
 
-        st.image(
-            image,
-            caption="Hochgeladenes Bild",
-            use_container_width=True
+        result = vision_analysis(
+            "Muskelaufbau",
+            80,
+            180
         )
 
-    before_image = st.file_uploader(
-        "Vorher Bild",
-        type=["png", "jpg", "jpeg"]
-    )
-
-    after_image = st.file_uploader(
-        "Nachher Bild",
-        type=["png", "jpg", "jpeg"]
-    )
+        st.markdown("## 🧠 Analyse")
+        st.write(result)
 
 
-# SESSION STATES
-if "analysis_done" not in st.session_state:
-    st.session_state.analysis_done = False
+# =========================
+# 🤖 CHATBOT
+# =========================
 
-if "analysis_result" not in st.session_state:
-    st.session_state.analysis_result = ""
+elif page == "🤖 Chatbot":
 
-if "vision_result" not in st.session_state:
-    st.session_state.vision_result = ""
+    st.title("🤖 AI Chat Coach")
 
-if "calories" not in st.session_state:
-    st.session_state.calories = 0
-
-if "macros" not in st.session_state:
-    st.session_state.macros = {}
-
-if "water" not in st.session_state:
-    st.session_state.water = 0
-
-if "sleep" not in st.session_state:
-    st.session_state.sleep = ""
-
-if "workout" not in st.session_state:
-    st.session_state.workout = ""
-
-
-# BUTTON
-if st.button("🚀 Analyse starten"):
-
-    st.session_state.analysis_done = True
-
-    # AI ANALYSE
-    st.session_state.analysis_result = analyze_fitness(
-        age,
-        weight,
-        height,
-        goal
-    )
-
-    # VISION ANALYSE
-    st.session_state.vision_result = vision_analysis()
-
-    # KALORIEN
-    st.session_state.calories = calculate_calories(
-        weight,
-        height,
-        age,
-        goal
-    )
-
-    # MAKROS
-    st.session_state.macros = calculate_macros(
-        st.session_state.calories,
-        goal
-    )
-
-    # WASSER
-    st.session_state.water = calculate_water(weight)
-
-    # SCHLAF
-    st.session_state.sleep = sleep_recommendation(goal)
-
-    # WORKOUT
-    st.session_state.workout = generate_workout(goal)
-
-    # SAVE PROGRESS
-    save_progress_entry(
-    st.session_state.username,
-    weight,
-    st.session_state.calories
-)
-
-
-# DAUERHAFTE AUSGABE
-if st.session_state.analysis_done:
-
-    # ANALYSE
-    st.markdown("# 🧠 Analyse")
-
-    st.write(
-        st.session_state.analysis_result
-    )
-
-
-    # VISION
-    st.markdown("# 📸 Vision Analyse")
-
-    st.write(
-        st.session_state.vision_result
-    )
-
-
-    # ERNÄHRUNG
-    st.markdown("# 🍽 Ernährung")
-
-    st.success(
-        f"Empfohlene Kalorien: {st.session_state.calories} kcal"
-    )
-
-
-    # MAKROS
-    st.markdown("# 🍗 Makros")
-
-    st.write(
-        st.session_state.macros
-    )
-
-
-    # MAKRO TRACKER
-    macro_tracker()
-
-
-    # WASSER
-    st.markdown("# 💧 Wasser")
-
-    st.success(
-        f"Empfohlene Wassermenge: {st.session_state.water} Liter"
-    )
-
-
-    # SCHLAF
-    st.markdown("# 💤 Schlaf")
-
-    st.info(
-        st.session_state.sleep
-    )
-
-
-    # WORKOUT
-    st.markdown("# 💪 Workout Plan")
-
-    st.write(
-        st.session_state.workout
-    )
-
-
-    # CHART
-    st.markdown("# 📈 Fortschritt")
-
-    show_progress_chart(weight)
-
-
-    # BILD VERGLEICH
-    if before_image and after_image:
-
-        st.markdown("# 📸 Vorher / Nachher")
-
-        show_image_comparison(
-            before_image,
-            after_image
-        )
-
-
-    # VIDEO
-    show_workout_video()
-
-
-    # CHATBOT
     chatbot_coach()
-st.markdown("---")
-
-show_progress_dashboard(st.session_state.username)
-st.markdown("---")
-
-st.markdown("## 🧠 AI Progress Coach")
-
-if st.session_state.analysis_done:
-
-    coach_result = ai_progress_coach(st.session_state.username)
-
-    st.write(coach_result)
-st.markdown("---")
-
-st.markdown("## 🔥 Adaptiver Trainingsplan (KI)")
-
-if st.session_state.analysis_done:
-
-    adaptive_result = adaptive_training_plan(
-        st.session_state.username,
-        goal
-    )
-
-    st.write(adaptive_result)
