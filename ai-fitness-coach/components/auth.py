@@ -1,54 +1,61 @@
 import streamlit as st
+from components.user_db import register_user, login_user
 
 
 def login_section():
 
-    # =========================
-    # SESSION STATE SAFE INIT
-    # =========================
     if "logged_in" not in st.session_state:
         st.session_state.logged_in = False
 
     if "username" not in st.session_state:
         st.session_state.username = ""
 
-    # =========================
-    # LOGIN SCREEN
-    # =========================
     if not st.session_state.logged_in:
 
-        st.markdown("""
-        <div style='text-align:center; padding:30px'>
-            <h1>💪 AI Fitness Coach</h1>
-            <p style='color:gray'>Login oder Account erstellen</p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.title("💪 AI Fitness Coach")
 
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
+        tab1, tab2 = st.tabs(["🔑 Login", "🆕 Register"])
 
-        if st.button("🚀 Login / Register"):
+        # =========================
+        # LOGIN
+        # =========================
+        with tab1:
 
-            if username.strip() != "":
+            username = st.text_input("Username", key="login_user")
+            password = st.text_input("Password", type="password", key="login_pass")
 
-                st.session_state.logged_in = True
-                st.session_state.username = username.strip()
+            if st.button("Login"):
 
-                st.success("Login erfolgreich 🚀")
+                success, msg = login_user(username, password)
 
-                st.rerun()
+                if success:
+                    st.session_state.logged_in = True
+                    st.session_state.username = username
+                    st.success(msg)
+                    st.rerun()
+                else:
+                    st.error(msg)
 
-            else:
-                st.error("Bitte Username eingeben")
+        # =========================
+        # REGISTER
+        # =========================
+        with tab2:
 
-    # =========================
-    # LOGGED IN STATE
-    # =========================
+            new_user = st.text_input("New Username", key="reg_user")
+            new_pass = st.text_input("New Password", type="password", key="reg_pass")
+
+            if st.button("Create Account"):
+
+                success, msg = register_user(new_user, new_pass)
+
+                if success:
+                    st.success(msg)
+                else:
+                    st.error(msg)
+
     else:
 
-        st.sidebar.markdown("### 👤 Account")
-
-        st.sidebar.success(f"{st.session_state.username}")
+        st.sidebar.success(f"👤 {st.session_state.username}")
 
         if st.sidebar.button("🚪 Logout"):
 
