@@ -1,38 +1,52 @@
-import random
+from groq import Groq
+import streamlit as st
 
 
-def analyze_fitness(age, weight, height, goal):
+client = Groq(
+    api_key=st.secrets["GROQ_API_KEY"]
+)
 
-    bmi = weight / ((height / 100) ** 2)
 
-    quotes = [
-        "Disziplin schlägt Motivation.",
-        "Jeder Fortschritt zählt.",
-        "Konstanz gewinnt.",
-        "Bleib fokussiert."
-    ]
+def analyze_fitness(
+    age,
+    weight,
+    height,
+    goal
+):
 
-    quote = random.choice(quotes)
+    prompt = f"""
+Du bist ein professioneller Fitness Coach.
 
-    if bmi < 20:
-        body = "schlank"
-    elif bmi < 26:
-        body = "athletisch"
-    else:
-        body = "kräftig"
+Person:
+- Alter: {age}
+- Gewicht: {weight}kg
+- Größe: {height}cm
+- Ziel: {goal}
 
-    return f"""
-📊 BMI: {bmi:.1f}
+Erstelle:
+1. Körperanalyse
+2. Trainingsplan
+3. Ernährung
+4. Kalorien Empfehlung
+5. Motivation
 
-👤 Körpertyp:
-{body}
-
-🎯 Ziel:
-{goal}
-
-🔥 Empfehlung:
-Trainiere konstant 4-5x pro Woche.
-
-💡 Motivation:
-{quote}
+Antworte modern und motivierend.
 """
+
+    try:
+
+        completion = client.chat.completions.create(
+            model="llama3-70b-8192",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ]
+        )
+
+        return completion.choices[0].message.content
+
+    except Exception as e:
+
+        return f"Fehler: {str(e)}"
