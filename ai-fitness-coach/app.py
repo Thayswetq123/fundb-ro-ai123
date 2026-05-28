@@ -10,7 +10,7 @@ from components.macros import calculate_macros
 from components.water import calculate_water
 from components.sleep import sleep_recommendation
 from components.image_compare import show_image_comparison
-
+from components.adaptive_coach import adaptive_training_plan
 from components.auth import login_section
 from components.progress_storage import save_progress_entry
 from components.vision import vision_analysis
@@ -282,3 +282,15 @@ if st.session_state.analysis_done:
     coach_result = ai_progress_coach(st.session_state.username)
 
     st.write(coach_result)
+st.markdown("---")
+
+st.markdown("## 🔥 Adaptiver Trainingsplan (KI)")
+
+if st.session_state.analysis_done:
+
+    adaptive_result = adaptive_training_plan(
+        st.session_state.username,
+        goal
+    )
+
+    st.write(adaptive_result)
