@@ -5,7 +5,7 @@ from components.progress_dashboard import show_progress_dashboard
 from components.nutrition import calculate_calories
 from components.workout import generate_workout
 from components.progress import show_progress_chart
-
+from components.ai_progress_coach import ai_progress_coach
 from components.macros import calculate_macros
 from components.water import calculate_water
 from components.sleep import sleep_recommendation
@@ -273,3 +273,12 @@ if st.session_state.analysis_done:
 st.markdown("---")
 
 show_progress_dashboard(st.session_state.username)
+st.markdown("---")
+
+st.markdown("## 🧠 AI Progress Coach")
+
+if st.session_state.analysis_done:
+
+    coach_result = ai_progress_coach(st.session_state.username)
+
+    st.write(coach_result)
