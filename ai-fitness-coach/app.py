@@ -1,7 +1,7 @@
 import streamlit as st
 
 from services.ai_service import analyze_fitness
-
+from components.progress_dashboard import show_progress_dashboard
 from components.nutrition import calculate_calories
 from components.workout import generate_workout
 from components.progress import show_progress_chart
@@ -270,3 +270,6 @@ if st.session_state.analysis_done:
 
     # CHATBOT
     chatbot_coach()
+st.markdown("---")
+
+show_progress_dashboard(st.session_state.username)
