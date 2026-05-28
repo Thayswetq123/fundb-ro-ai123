@@ -1,27 +1,56 @@
+import streamlit as st
+
+from services.ai_service import analyze_fitness
+
+from components.nutrition import calculate_calories
+from components.workout import generate_workout
+from components.progress import show_progress_chart
+
 from components.macros import calculate_macros
 from components.water import calculate_water
 from components.sleep import sleep_recommendation
 from components.image_compare import show_image_comparison
-import streamlit as st
-from services.ai_service import analyze_fitness
-from components.nutrition import calculate_calories
-from components.workout import generate_workout
-from components.progress import show_progress_chart
+
+from components.auth import login_section
+from components.save_progress import save_progress
+from components.vision import vision_analysis
+from components.macro_tracker import macro_tracker
+from components.videos import show_workout_video
+from components.chatbot import chatbot_coach
+
 
 st.set_page_config(
     page_title="AI Fitness Coach",
     layout="wide"
 )
 
+# LOGIN
+logged_in = login_section()
+
+if not logged_in:
+    st.warning("Bitte einloggen")
+    st.stop()
+
+
+# TITLE
 st.title("💪 AI Fitness Coach")
 
 st.markdown("## Deine persönliche Fitness Analyse")
 
+
+# LAYOUT
 col1, col2 = st.columns(2)
 
+
+# LEFT SIDE
 with col1:
 
-    age = st.number_input("Alter", 16, 100, 25)
+    age = st.number_input(
+        "Alter",
+        16,
+        100,
+        25
+    )
 
     weight = st.number_input(
         "Gewicht (kg)",
@@ -46,6 +75,8 @@ with col1:
         ]
     )
 
+
+# RIGHT SIDE
 with col2:
 
     image = st.file_uploader(
@@ -56,8 +87,21 @@ with col2:
     if image:
         st.image(image)
 
+    before_image = st.file_uploader(
+        "Vorher Bild",
+        type=["png", "jpg", "jpeg"]
+    )
+
+    after_image = st.file_uploader(
+        "Nachher Bild",
+        type=["png", "jpg", "jpeg"]
+    )
+
+
+# BUTTON
 if st.button("🚀 Analyse starten"):
 
+    # AI ANALYSIS
     result = analyze_fitness(
         age,
         weight,
@@ -66,6 +110,101 @@ if st.button("🚀 Analyse starten"):
     )
 
     st.markdown("# 🧠 Analyse")
+
     st.write(result)
 
+
+    # VISION ANALYSIS
+    vision = vision_analysis()
+
+    st.markdown("# 📸 Vision Analyse")
+
+    st.write(vision)
+
+
+    # CALORIES
+    st.markdown("# 🍽 Ernährung")
+
+    calories = calculate_calories(
+        weight,
+        height,
+        age,
+        goal
+    )
+
+    st.success(
+        f"Empfohlene Kalorien: {calories} kcal"
+    )
+
+
+    # SAVE PROGRESS
+    save_progress(
+        weight,
+        calories
+    )
+
+
+    # MACROS
+    st.markdown("# 🍗 Makros")
+
+    macros = calculate_macros(
+        calories,
+        goal
+    )
+
+    st.write(macros)
+
+
+    # MACRO TRACKER
+    macro_tracker()
+
+
+    # WATER
+    water = calculate_water(weight)
+
+    st.markdown("# 💧 Wasser")
+
+    st.success(
+        f"Empfohlene Wassermenge: {water}L"
+    )
+
+
+    # SLEEP
+    sleep = sleep_recommendation(goal)
+
+    st.markdown("# 💤 Schlaf")
+
+    st.info(sleep)
+
+
+    # WORKOUT
+    st.markdown("# 💪 Workout")
+
+    workout = generate_workout(goal)
+
+    st.write(workout)
+
+
+    # PROGRESS CHART
+    st.markdown("# 📈 Fortschritt")
+
     show_progress_chart(weight)
+
+
+    # IMAGE COMPARISON
+    if before_image and after_image:
+
+        st.markdown("# 📸 Fortschrittsvergleich")
+
+        show_image_comparison(
+            before_image,
+            after_image
+        )
+
+
+    # VIDEO
+    show_workout_video()
+
+
+    # CHATBOT
+    chatbot_coach()
