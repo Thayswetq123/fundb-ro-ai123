@@ -21,7 +21,7 @@ st.set_page_config(
 
 
 # =========================
-# 🎨 LEVEL 4 UI DESIGN
+# 🎨 LEVEL 5 UI DESIGN
 # =========================
 st.markdown("""
 <style>
@@ -47,6 +47,8 @@ div.stButton > button {
     padding: 12px 18px;
     border: none;
     font-weight: 600;
+    width: 100%;
+    height: 55px;
 }
 
 div.stButton > button:hover {
@@ -66,16 +68,22 @@ div.stButton > button:hover {
 
 /* METRICS */
 [data-testid="stMetric"] {
-    background-color: rgba(17, 24, 39, 0.7);
-    padding: 16px;
-    border-radius: 14px;
+    background: rgba(17,24,39,0.9);
+    padding: 20px;
+    border-radius: 18px;
     border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0px 4px 20px rgba(0,0,0,0.2);
 }
 
 /* HEADINGS */
 h1, h2, h3 {
     color: #f9fafb;
     letter-spacing: -0.5px;
+}
+
+.block-container {
+    max-width: 1400px;
+    padding-top: 2rem;
 }
 
 </style>
@@ -114,43 +122,129 @@ st.sidebar.success(f"👤 {st.session_state.username}")
 if page == "📊 Dashboard":
 
     st.markdown("""
-    <div class="card">
-        <h2>🔥 Welcome back</h2>
-        <p>Dein AI Coach analysiert deinen Fortschritt in Echtzeit</p>
+    <div style="
+    padding:35px;
+    border-radius:25px;
+    background:linear-gradient(135deg,#4f46e5,#7c3aed);
+    margin-bottom:25px;
+    box-shadow:0px 10px 30px rgba(0,0,0,0.3);
+    ">
+    <h1 style="color:white;margin:0;">
+    💪 Willkommen zurück
+    </h1>
+
+    <p style="
+    color:white;
+    font-size:18px;
+    margin-top:10px;
+    ">
+    Verfolge deinen Fortschritt, verbessere dein Training
+    und erreiche deine Ziele mit KI.
+    </p>
     </div>
     """, unsafe_allow_html=True)
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
 
     with col1:
-        st.metric("🔥 Form", "Strong", "+2%")
+        st.metric(
+            "⚖️ Gewicht",
+            "80 kg",
+            "-1.2 kg"
+        )
 
     with col2:
-        st.metric("📈 Progress", "Good", "+1.2kg")
+        st.metric(
+            "🔥 Kalorien",
+            "2400",
+            "-200"
+        )
 
     with col3:
-        st.metric("⚡ Streak", "5 days", "+1")
+        st.metric(
+            "💪 Workouts",
+            "18",
+            "+3"
+        )
+
+    with col4:
+        st.metric(
+            "⚡ Streak",
+            "7 Tage",
+            "+1"
+        )
+
+    st.markdown("## 🚀 Schnellzugriffe")
+
+    c1, c2, c3 = st.columns(3)
+
+    with c1:
+        st.button(
+            "📸 Neue Analyse",
+            use_container_width=True
+        )
+
+    with c2:
+        st.button(
+            "💪 Trainingsplan",
+            use_container_width=True
+        )
+
+    with c3:
+        st.button(
+            "🍽 Ernährung",
+            use_container_width=True
+        )
 
     st.markdown("---")
 
-    show_progress_dashboard(st.session_state.username)
+    st.markdown("""
+    ## 📈 Fortschritt
 
-    st.markdown("---")
+    Verfolge deine Entwicklung über Zeit.
+    """)
 
-    st.markdown("## 🧠 AI Coach Feedback")
-
-    st.info(
-        ai_progress_coach(st.session_state.username)
+    show_progress_dashboard(
+        st.session_state.username
     )
+
+    st.markdown("---")
+
+    coach_text = ai_progress_coach(
+        st.session_state.username
+    )
+
+    st.markdown(f"""
+    <div style="
+    padding:20px;
+    border-radius:18px;
+    background:#111827;
+    border:1px solid #374151;
+    margin-top:20px;
+    margin-bottom:20px;
+    ">
+    <h3>🧠 AI Coach Feedback</h3>
+    <p>{coach_text}</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     st.markdown("## 🔥 Adaptiver Trainingsplan")
 
-    st.write(
-        adaptive_training_plan(
-            st.session_state.username,
-            "Muskelaufbau"
-        )
+    plan = adaptive_training_plan(
+        st.session_state.username,
+        "Muskelaufbau"
     )
+
+    st.markdown(f"""
+    <div style="
+    padding:20px;
+    border-radius:18px;
+    background:#111827;
+    border:1px solid #374151;
+    ">
+    {plan}
+    </div>
+    """, unsafe_allow_html=True)
 
 
 # =========================
@@ -180,7 +274,12 @@ elif page == "🧠 Coach":
 
         with st.spinner("AI denkt nach... 🧠"):
 
-            result = analyze_fitness(age, weight, height, goal)
+            result = analyze_fitness(
+                age,
+                weight,
+                height,
+                goal
+            )
 
         st.markdown("## 🧠 Ergebnis")
 
