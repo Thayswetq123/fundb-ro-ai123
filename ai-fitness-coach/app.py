@@ -111,7 +111,7 @@ if "page" not in st.session_state:
 page = st.sidebar.radio(
     "Navigation",
     ["📊 Dashboard", "🧠 Coach", "📸 Vision", "🤖 Chat"],
-    key="page"
+
 )
 
 st.sidebar.markdown("---")
@@ -177,133 +177,79 @@ if page == "📊 Dashboard":
             "+1"
         )
 
-    st.markdown("## 🚀 Schnellzugriffe")
-    col1, col2, col3 = st.columns(3)
+  st.markdown("## 🚀 Schnellzugriffe")
 
-    with col1:
+col1, col2, col3 = st.columns(3)
 
-        st.markdown("""
-        <div style="
-        background:linear-gradient(135deg,#2563eb,#3b82f6);
-        border-radius:20px;
-        padding:25px;
-        text-align:center;
-        margin-bottom:10px;
-        box-shadow:0 8px 20px rgba(0,0,0,.3);
-        ">
-        <h2>📸</h2>
-        <h3>Körperanalyse</h3>
-        <p>Lade Bilder hoch und analysiere deinen Fortschritt.</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        if st.button(
-            "Zur Analyse",
-            key="vision_card",
-            use_container_width=True
-        ):
-            st.session_state.page = "📸 Vision"
-            st.rerun()
-
-    with col2:
-
-        st.markdown("""
-        <div style="
-        background:linear-gradient(135deg,#7c3aed,#9333ea);
-        border-radius:20px;
-        padding:25px;
-        text-align:center;
-        margin-bottom:10px;
-        box-shadow:0 8px 20px rgba(0,0,0,.3);
-        ">
-        <h2>💪</h2>
-        <h3>KI Coach</h3>
-        <p>Erhalte einen persönlichen Trainingsplan.</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        if st.button(
-            "Zum Coach",
-            key="coach_card",
-            use_container_width=True
-        ):
-            st.session_state.page = "🧠 Coach"
-            st.rerun()
-
-    with col3:
-
-        st.markdown("""
-        <div style="
-        background:linear-gradient(135deg,#059669,#10b981);
-        border-radius:20px;
-        padding:25px;
-        text-align:center;
-        margin-bottom:10px;
-        box-shadow:0 8px 20px rgba(0,0,0,.3);
-        ">
-        <h2>🤖</h2>
-        <h3>AI Chat</h3>
-        <p>Stelle Fragen zu Training und Ernährung.</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        if st.button(
-            "Zum Chat",
-            key="chat_card",
-            use_container_width=True
-        ):
-            st.session_state.page = "🤖 Chat"
-            st.rerun()
-
-    st.markdown("---")
-
+# =========================
+# 📸 CARD 1 - VISION
+# =========================
+with col1:
     st.markdown("""
-    ## 📈 Fortschritt
-
-    Verfolge deine Entwicklung über Zeit.
-    """)
-
-    show_progress_dashboard(
-        st.session_state.username
-    )
-
-    st.markdown("---")
-
-    coach_text = ai_progress_coach(
-        st.session_state.username
-    )
-
-    st.markdown(f"""
     <div style="
-    padding:20px;
-    border-radius:18px;
-    background:#111827;
-    border:1px solid #374151;
-    margin-top:20px;
-    margin-bottom:20px;
+    background:linear-gradient(135deg,#2563eb,#3b82f6);
+    border-radius:20px;
+    padding:25px;
+    text-align:center;
+    margin-bottom:10px;
+    box-shadow:0 8px 20px rgba(0,0,0,.3);
+    cursor:pointer;
     ">
-    <h3>🧠 AI Coach Feedback</h3>
-    <p>{coach_text}</p>
+    <h2>📸</h2>
+    <h3>Körperanalyse</h3>
+    <p>Bilder hochladen & Fortschritt checken</p>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("## 🔥 Adaptiver Trainingsplan")
+    if st.button("Öffnen", key="vision_btn", use_container_width=True):
+        st.switch_page  # fallback safety (no crash)
+        st.session_state.page = "📸 Vision"
 
-    plan = adaptive_training_plan(
-        st.session_state.username,
-        "Muskelaufbau"
-    )
-
-    st.markdown(f"""
+# =========================
+# 💪 CARD 2 - COACH
+# =========================
+with col2:
+    st.markdown("""
     <div style="
-    padding:20px;
-    border-radius:18px;
-    background:#111827;
-    border:1px solid #374151;
+    background:linear-gradient(135deg,#7c3aed,#9333ea);
+    border-radius:20px;
+    padding:25px;
+    text-align:center;
+    margin-bottom:10px;
+    box-shadow:0 8px 20px rgba(0,0,0,.3);
+    cursor:pointer;
     ">
-    {plan}
+    <h2>💪</h2>
+    <h3>KI Coach</h3>
+    <p>Trainingsplan & Analyse</p>
     </div>
     """, unsafe_allow_html=True)
+
+    if st.button("Öffnen", key="coach_btn", use_container_width=True):
+        st.session_state.page = "🧠 Coach"
+
+# =========================
+# 🤖 CARD 3 - CHAT
+# =========================
+with col3:
+    st.markdown("""
+    <div style="
+    background:linear-gradient(135deg,#059669,#10b981);
+    border-radius:20px;
+    padding:25px;
+    text-align:center;
+    margin-bottom:10px;
+    box-shadow:0 8px 20px rgba(0,0,0,.3);
+    cursor:pointer;
+    ">
+    <h2>🤖</h2>
+    <h3>AI Chat</h3>
+    <p>Fragen stellen</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    if st.button("Öffnen", key="chat_btn", use_container_width=True):
+        st.session_state.page = "🤖 Chat"
 # =========================
 # 🧠 COACH
 # =========================
