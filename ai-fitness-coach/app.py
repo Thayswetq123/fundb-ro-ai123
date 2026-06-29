@@ -177,7 +177,7 @@ if page == "📊 Dashboard":
             "+1"
         )
 
-
+st.markdown("## 🚀 Schnellzugriffe")
 
 col1, col2, col3 = st.columns(3)
 
