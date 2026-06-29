@@ -21,7 +21,7 @@ st.set_page_config(
 
 
 # =========================
-# 🎨 LEVEL 5 UI DESIGN
+# 🎨 LEVEL 4 UI DESIGN
 # =========================
 st.markdown("""
 <style>
@@ -47,8 +47,6 @@ div.stButton > button {
     padding: 12px 18px;
     border: none;
     font-weight: 600;
-    width: 100%;
-    height: 55px;
 }
 
 div.stButton > button:hover {
@@ -68,22 +66,16 @@ div.stButton > button:hover {
 
 /* METRICS */
 [data-testid="stMetric"] {
-    background: rgba(17,24,39,0.9);
-    padding: 20px;
-    border-radius: 18px;
+    background-color: rgba(17, 24, 39, 0.7);
+    padding: 16px;
+    border-radius: 14px;
     border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0px 4px 20px rgba(0,0,0,0.2);
 }
 
 /* HEADINGS */
 h1, h2, h3 {
     color: #f9fafb;
     letter-spacing: -0.5px;
-}
-
-.block-container {
-    max-width: 1400px;
-    padding-top: 2rem;
 }
 
 </style>
@@ -105,13 +97,10 @@ if not st.session_state.logged_in:
 st.sidebar.title("💪 AI Fitness")
 
 st.sidebar.markdown("---")
-if "page" not in st.session_state:
-    st.session_state.page = "📊 Dashboard"
 
 page = st.sidebar.radio(
     "Navigation",
-    ["📊 Dashboard", "🧠 Coach", "📸 Vision", "🤖 Chat"],
-
+    ["📊 Dashboard", "🧠 Coach", "📸 Vision", "🤖 Chat"]
 )
 
 st.sidebar.markdown("---")
@@ -125,131 +114,45 @@ st.sidebar.success(f"👤 {st.session_state.username}")
 if page == "📊 Dashboard":
 
     st.markdown("""
-    <div style="
-    padding:35px;
-    border-radius:25px;
-    background:linear-gradient(135deg,#4f46e5,#7c3aed);
-    margin-bottom:25px;
-    box-shadow:0px 10px 30px rgba(0,0,0,0.3);
-    ">
-    <h1 style="color:white;margin:0;">
-    💪 Willkommen zurück
-    </h1>
-
-    <p style="
-    color:white;
-    font-size:18px;
-    margin-top:10px;
-    ">
-    Verfolge deinen Fortschritt, verbessere dein Training
-    und erreiche deine Ziele mit KI.
-    </p>
+    <div class="card">
+        <h2>🔥 Welcome back</h2>
+        <p>Dein AI Coach analysiert deinen Fortschritt in Echtzeit</p>
     </div>
     """, unsafe_allow_html=True)
 
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.metric(
-            "⚖️ Gewicht",
-            "80 kg",
-            "-1.2 kg"
-        )
+        st.metric("🔥 Form", "Strong", "+2%")
 
     with col2:
-        st.metric(
-            "🔥 Kalorien",
-            "2400",
-            "-200"
-        )
+        st.metric("📈 Progress", "Good", "+1.2kg")
 
     with col3:
-        st.metric(
-            "💪 Workouts",
-            "18",
-            "+3"
+        st.metric("⚡ Streak", "5 days", "+1")
+
+    st.markdown("---")
+
+    show_progress_dashboard(st.session_state.username)
+
+    st.markdown("---")
+
+    st.markdown("## 🧠 AI Coach Feedback")
+
+    st.info(
+        ai_progress_coach(st.session_state.username)
+    )
+
+    st.markdown("## 🔥 Adaptiver Trainingsplan")
+
+    st.write(
+        adaptive_training_plan(
+            st.session_state.username,
+            "Muskelaufbau"
         )
+    )
 
-    with col4:
-        st.metric(
-            "⚡ Streak",
-            "7 Tage",
-            "+1"
-        )
 
-    st.markdown("## 🚀 Schnellzugriffe")
-
-col1, col2, col3 = st.columns(3)
-
-# =========================
-# 📸 CARD 1 - VISION
-# =========================
-with col1:
-    st.markdown("""
-    <div style="
-    background:linear-gradient(135deg,#2563eb,#3b82f6);
-    border-radius:20px;
-    padding:25px;
-    text-align:center;
-    margin-bottom:10px;
-    box-shadow:0 8px 20px rgba(0,0,0,.3);
-    cursor:pointer;
-    ">
-    <h2>📸</h2>
-    <h3>Körperanalyse</h3>
-    <p>Bilder hochladen & Fortschritt checken</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    if st.button("Öffnen", key="vision_btn", use_container_width=True):
-        st.switch_page  # fallback safety (no crash)
-        st.session_state.page = "📸 Vision"
-
-# =========================
-# 💪 CARD 2 - COACH
-# =========================
-with col2:
-    st.markdown("""
-    <div style="
-    background:linear-gradient(135deg,#7c3aed,#9333ea);
-    border-radius:20px;
-    padding:25px;
-    text-align:center;
-    margin-bottom:10px;
-    box-shadow:0 8px 20px rgba(0,0,0,.3);
-    cursor:pointer;
-    ">
-    <h2>💪</h2>
-    <h3>KI Coach</h3>
-    <p>Trainingsplan & Analyse</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    if st.button("Öffnen", key="coach_btn", use_container_width=True):
-        st.session_state.page = "🧠 Coach"
-
-# =========================
-# 🤖 CARD 3 - CHAT
-# =========================
-with col3:
-    st.markdown("""
-    <div style="
-    background:linear-gradient(135deg,#059669,#10b981);
-    border-radius:20px;
-    padding:25px;
-    text-align:center;
-    margin-bottom:10px;
-    box-shadow:0 8px 20px rgba(0,0,0,.3);
-    cursor:pointer;
-    ">
-    <h2>🤖</h2>
-    <h3>AI Chat</h3>
-    <p>Fragen stellen</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    if st.button("Öffnen", key="chat_btn", use_container_width=True):
-        st.session_state.page = "🤖 Chat"
 # =========================
 # 🧠 COACH
 # =========================
@@ -277,12 +180,7 @@ elif page == "🧠 Coach":
 
         with st.spinner("AI denkt nach... 🧠"):
 
-            result = analyze_fitness(
-                age,
-                weight,
-                height,
-                goal
-            )
+            result = analyze_fitness(age, weight, height, goal)
 
         st.markdown("## 🧠 Ergebnis")
 
