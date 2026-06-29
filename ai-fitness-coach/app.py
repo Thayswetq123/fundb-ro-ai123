@@ -177,86 +177,83 @@ if page == "📊 Dashboard":
             "+1"
         )
 
-st.markdown("## 🚀 Schnellzugriffe")
+    st.markdown("## 🚀 Schnellzugriffe")
+    col1, col2, col3 = st.columns(3)
 
-col1, col2, col3 = st.columns(3)
+    with col1:
 
-with col1:
+        st.markdown("""
+        <div style="
+        background:linear-gradient(135deg,#2563eb,#3b82f6);
+        border-radius:20px;
+        padding:25px;
+        text-align:center;
+        margin-bottom:10px;
+        box-shadow:0 8px 20px rgba(0,0,0,.3);
+        ">
+        <h2>📸</h2>
+        <h3>Körperanalyse</h3>
+        <p>Lade Bilder hoch und analysiere deinen Fortschritt.</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-    st.markdown("""
-    <div style="
-    background:linear-gradient(135deg,#2563eb,#3b82f6);
-    border-radius:20px;
-    padding:25px;
-    text-align:center;
-    margin-bottom:10px;
-    box-shadow:0 8px 20px rgba(0,0,0,.3);
-    ">
-    <h2>📸</h2>
-    <h3>Körperanalyse</h3>
-    <p>Lade Bilder hoch und analysiere deinen Fortschritt.</p>
-    </div>
-    """, unsafe_allow_html=True)
+        if st.button(
+            "Zur Analyse",
+            key="vision_card",
+            use_container_width=True
+        ):
+            st.session_state.page = "📸 Vision"
+            st.rerun()
 
-    if st.button(
-        "Zur Analyse",
-        key="vision_card",
-        use_container_width=True
-    ):
-        st.session_state.page = "📸 Vision"
-        st.rerun()
+    with col2:
 
+        st.markdown("""
+        <div style="
+        background:linear-gradient(135deg,#7c3aed,#9333ea);
+        border-radius:20px;
+        padding:25px;
+        text-align:center;
+        margin-bottom:10px;
+        box-shadow:0 8px 20px rgba(0,0,0,.3);
+        ">
+        <h2>💪</h2>
+        <h3>KI Coach</h3>
+        <p>Erhalte einen persönlichen Trainingsplan.</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-with col2:
+        if st.button(
+            "Zum Coach",
+            key="coach_card",
+            use_container_width=True
+        ):
+            st.session_state.page = "🧠 Coach"
+            st.rerun()
 
-    st.markdown("""
-    <div style="
-    background:linear-gradient(135deg,#7c3aed,#9333ea);
-    border-radius:20px;
-    padding:25px;
-    text-align:center;
-    margin-bottom:10px;
-    box-shadow:0 8px 20px rgba(0,0,0,.3);
-    ">
-    <h2>💪</h2>
-    <h3>KI Coach</h3>
-    <p>Erhalte einen persönlichen Trainingsplan.</p>
-    </div>
-    """, unsafe_allow_html=True)
+    with col3:
 
-    if st.button(
-        "Zum Coach",
-        key="coach_card",
-        use_container_width=True
-    ):
-        st.session_state.page = "🧠 Coach"
-        st.rerun()
+        st.markdown("""
+        <div style="
+        background:linear-gradient(135deg,#059669,#10b981);
+        border-radius:20px;
+        padding:25px;
+        text-align:center;
+        margin-bottom:10px;
+        box-shadow:0 8px 20px rgba(0,0,0,.3);
+        ">
+        <h2>🤖</h2>
+        <h3>AI Chat</h3>
+        <p>Stelle Fragen zu Training und Ernährung.</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-
-with col3:
-
-    st.markdown("""
-    <div style="
-    background:linear-gradient(135deg,#059669,#10b981);
-    border-radius:20px;
-    padding:25px;
-    text-align:center;
-    margin-bottom:10px;
-    box-shadow:0 8px 20px rgba(0,0,0,.3);
-    ">
-    <h2>🤖</h2>
-    <h3>AI Chat</h3>
-    <p>Stelle Fragen zu Training und Ernährung.</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    if st.button(
-        "Zum Chat",
-        key="chat_card",
-        use_container_width=True
-    ):
-        st.session_state.page = "🤖 Chat"
-        st.rerun()
+        if st.button(
+            "Zum Chat",
+            key="chat_card",
+            use_container_width=True
+        ):
+            st.session_state.page = "🤖 Chat"
+            st.rerun()
 
     st.markdown("---")
 
@@ -307,8 +304,6 @@ with col3:
     {plan}
     </div>
     """, unsafe_allow_html=True)
-
-
 # =========================
 # 🧠 COACH
 # =========================
